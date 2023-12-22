@@ -3,9 +3,8 @@ package dev.fizcode.mofiz.common
 import dev.fizcode.mofiz.BuildConfig
 
 object Constant {
-    object ApiKey {
-        const val API_KEY = BuildConfig.API_KEY
-    }
+
+    const val API_KEY = BuildConfig.API_KEY
     object Named {
         const val BASE_URL = "BASE_URL"
         const val RETROFIT = "RETROFIT"
