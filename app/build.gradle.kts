@@ -106,4 +106,20 @@ dependencies {
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation("com.squareup.okhttp3:okhttp:5.0.0-alpha.11")
     implementation("com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.11")
+
+    // System UI Controller
+    implementation("com.google.accompanist:accompanist-systemuicontroller:0.32.0")
+
+    // Navigation Compose
+    implementation("androidx.navigation:navigation-compose:2.7.6")
+
+    // Extended Icons
+    implementation("androidx.compose.material:material-icons-core:1.5.4")
+    implementation("androidx.compose.material:material-icons-extended:1.5.4")
+
+    // Coil: Image Loading
+    implementation("io.coil-kt:coil-compose:2.5.0")
+
+    // Google Font
+    implementation("androidx.compose.ui:ui-text-google-fonts:1.5.4")
 }

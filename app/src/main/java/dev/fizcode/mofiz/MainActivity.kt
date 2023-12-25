@@ -12,14 +12,20 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
 import dev.fizcode.mofiz.ui.components.HomeMovieLazyRow
+import dev.fizcode.mofiz.ui.navigation.navgraph.SetupNavGraph
 import dev.fizcode.mofiz.ui.screens.home.HomeViewModel
 import dev.fizcode.mofiz.ui.theme.MoFizMovieDataListsTheme
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+
+        lateinit var navController: NavHostController
+
         super.onCreate(savedInstanceState)
         setContent {
             MoFizMovieDataListsTheme {
@@ -33,11 +39,8 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    Greeting("This is Test Activity Only!!!")
-                    HomeMovieLazyRow(
-                        cardHeader = "Now Playing 🍿",
-                        items = nowPlaying.value.results
-                    )
+                    navController = rememberNavController()
+                    SetupNavGraph(navController = navController)
                 }
             }
         }
