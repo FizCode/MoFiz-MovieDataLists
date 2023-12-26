@@ -15,7 +15,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
-import dev.fizcode.mofiz.ui.components.HomeMovieLazyRow
 import dev.fizcode.mofiz.ui.navigation.navgraph.SetupNavGraph
 import dev.fizcode.mofiz.ui.screens.home.HomeViewModel
 import dev.fizcode.mofiz.ui.theme.MoFizMovieDataListsTheme
@@ -29,11 +28,6 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             MoFizMovieDataListsTheme {
-                val homeViewModel: HomeViewModel = hiltViewModel()
-                // Bind viewModel
-                homeViewModel.onViewLoaded()
-                val nowPlaying = homeViewModel.shouldShowNowPlaying.collectAsState()
-
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),

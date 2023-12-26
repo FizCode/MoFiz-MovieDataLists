@@ -5,6 +5,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import dev.fizcode.mofiz.common.Constant
+import dev.fizcode.mofiz.data.api.MovieDetailsAPI
 import dev.fizcode.mofiz.data.api.MovieListAPI
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -59,5 +60,13 @@ class NetworkModule {
         @Named(Constant.Named.RETROFIT) retrofit: Retrofit
     ): MovieListAPI {
         return retrofit.create(MovieListAPI::class.java)
+    }
+
+    @Singleton
+    @Provides
+    fun provideMovieDetailsAPI(
+        @Named(Constant.Named.RETROFIT) retrofit: Retrofit
+    ): MovieDetailsAPI {
+        return retrofit.create(MovieDetailsAPI::class.java)
     }
 }

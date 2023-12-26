@@ -19,11 +19,15 @@ class HomeViewModel @Inject constructor(
 ): ViewModel() {
 
     val shouldShowNowPlaying = MutableStateFlow(MovieListResponse())
+    val shouldShowMostPopular = MutableStateFlow(MovieListResponse())
+    val shouldShowUpcoming = MutableStateFlow(MovieListResponse())
     val shouldShowError: MutableState<Boolean> = mutableStateOf(false)
     val errorMessage: MutableState<String> = mutableStateOf("")
 
     fun onViewLoaded() {
         getNowPlaying()
+        getMostPopular()
+        getUpcoming()
     }
 
     private fun getNowPlaying() {
@@ -32,6 +36,34 @@ class HomeViewModel @Inject constructor(
             withContext(Dispatchers.Main) {
                 if (result.isSuccessful) {
                     shouldShowNowPlaying.value = result.body()!!
+                } else {
+                    shouldShowError.value = true
+                    errorMessage.value = result.message().orEmpty()
+                }
+            }
+        }
+    }
+
+    private fun getMostPopular() {
+        CoroutineScope(Dispatchers.IO).launch {
+            val result = movieListRepository.getMostPopular()
+            withContext(Dispatchers.Main) {
+                if (result.isSuccessful) {
+                    shouldShowMostPopular.value = result.body()!!
+                } else {
+                    shouldShowError.value = true
+                    errorMessage.value = result.message().orEmpty()
+                }
+            }
+        }
+    }
+
+    private fun getUpcoming() {
+        CoroutineScope(Dispatchers.IO).launch {
+            val result = movieListRepository.getUpcoming()
+            withContext(Dispatchers.Main) {
+                if (result.isSuccessful) {
+                    shouldShowUpcoming.value = result.body()!!
                 } else {
                     shouldShowError.value = true
                     errorMessage.value = result.message().orEmpty()
