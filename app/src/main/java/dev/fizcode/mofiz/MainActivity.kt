@@ -10,10 +10,18 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
+import dagger.hilt.android.AndroidEntryPoint
+import dev.fizcode.mofiz.ui.navigation.navgraph.SetupNavGraph
 import dev.fizcode.mofiz.ui.theme.MoFizMovieDataListsTheme
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+
+        lateinit var navController: NavHostController
+
         super.onCreate(savedInstanceState)
         setContent {
             MoFizMovieDataListsTheme {
@@ -22,7 +30,8 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    Greeting("Android")
+                    navController = rememberNavController()
+                    SetupNavGraph(navController = navController)
                 }
             }
         }
@@ -32,7 +41,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun Greeting(name: String, modifier: Modifier = Modifier) {
     Text(
-        text = "Hello $name!",
+        text = "Hello, $name!",
         modifier = modifier
     )
 }
