@@ -16,14 +16,18 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.BookmarkBorder
 import androidx.compose.material.icons.rounded.StarRate
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
@@ -40,6 +44,7 @@ import dev.fizcode.mofiz.common.Constant.Named.IMAGE_URL
 import dev.fizcode.mofiz.ui.components.ImageCard
 import dev.fizcode.mofiz.ui.components.TagTextOnly
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DetailsScreen(
     navController: NavController,
@@ -52,7 +57,21 @@ fun DetailsScreen(
     detailsViewModel.onViewLoaded(movieId = argsId)
     val movieDetails = detailsViewModel.shouldShowDetails.collectAsState()
 
-    Scaffold() {
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text(text = "Movie Details") },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(
+                            imageVector = Icons.Rounded.ArrowBack,
+                            contentDescription = "Back Button"
+                        )
+                    }
+                },
+            )
+        }
+    ) {
         innerPadding ->
         Column(
             Modifier
@@ -104,10 +123,11 @@ fun DetailsScreen(
                     ) {
                         val apiRating = movieDetails.value.voteAverage?.toInt()
 
+                        // Ratings
                         Column(
                             modifier = Modifier
                                 .background(
-                                    color = MaterialTheme.colorScheme.primary,
+                                    color = MaterialTheme.colorScheme.tertiary,
                                     shape = RoundedCornerShape(32.dp)
                                 ),
                         ) {
@@ -116,24 +136,26 @@ fun DetailsScreen(
                                 .padding(vertical = 8.dp, horizontal = 16.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-
                                 Icon(
                                     imageVector = Icons.Rounded.StarRate,
                                     contentDescription = "Start Rating",
-                                    tint = MaterialTheme.colorScheme.onPrimary
+                                    tint = MaterialTheme.colorScheme.onTertiary
                                 )
                                 Spacer(modifier = Modifier.size(4.dp))
                                 Text(
                                     text = "$apiRating",
                                     style = MaterialTheme.typography.labelLarge,
-                                    color = MaterialTheme.colorScheme.onPrimary
+                                    color = MaterialTheme.colorScheme.onTertiary
                                 )
                             }
                         }
                         Spacer(modifier = Modifier.size(8.dp))
+
+                        // Bookmark Button
                         Button(
                             onClick = { /* TODO */ },
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier.fillMaxWidth(),
+                            enabled = false
                         ) {
                             Icon(
                                 imageVector = Icons.Rounded.BookmarkBorder,
