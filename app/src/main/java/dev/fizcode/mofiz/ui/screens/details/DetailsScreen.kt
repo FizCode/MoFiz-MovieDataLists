@@ -41,7 +41,8 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import dev.fizcode.mofiz.R
 import dev.fizcode.mofiz.common.Constant.Named.IMAGE_URL
-import dev.fizcode.mofiz.ui.components.ImageCard
+import dev.fizcode.mofiz.ui.components.PosterPath
+import dev.fizcode.mofiz.ui.components.StatusAndNavBarColorBackground
 import dev.fizcode.mofiz.ui.components.TagTextOnly
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -57,6 +58,8 @@ fun DetailsScreen(
     detailsViewModel.onViewLoaded(movieId = argsId)
     val movieDetails = detailsViewModel.shouldShowDetails.collectAsState()
 
+    // View
+    StatusAndNavBarColorBackground()
     Scaffold(
         topBar = {
             TopAppBar(
@@ -83,7 +86,7 @@ fun DetailsScreen(
             ) {
                 AsyncImage(
                     model = IMAGE_URL + movieDetails.value.backdropPath,
-                    placeholder = painterResource(R.drawable.loading_image100x144),
+                    placeholder = painterResource(R.drawable.loading_image_small100x144),
                     contentDescription = "Movie Poster",
                     modifier = Modifier
                         .aspectRatio(16f / 9f),
@@ -113,7 +116,7 @@ fun DetailsScreen(
                                 .height(140.dp)
                                 .fillMaxWidth()
                         ) {
-                            ImageCard(moviePoster = IMAGE_URL + movieDetails.value.posterPath)
+                            PosterPath(moviePoster = IMAGE_URL + movieDetails.value.posterPath)
                         }
                     }
                     Row(
