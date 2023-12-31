@@ -2,7 +2,9 @@ package dev.fizcode.mofiz.ui.screens.home
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -13,7 +15,9 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -44,17 +48,26 @@ fun HomeScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                modifier = Modifier.padding(end = 16.dp),
-                scrollBehavior = scrollBehavior,
-                title = { CustomSearchInput() }
+                title = {
+                    Row(
+                        modifier = Modifier.padding(end = 16.dp),
+                        verticalAlignment = Alignment.Bottom
+                    ) {
+                        CustomSearchInput()
+                    }
+                },
+                scrollBehavior = scrollBehavior
             )
         },
+        modifier = Modifier
+            .nestedScroll(scrollBehavior.nestedScrollConnection),
     ) { innerPadding ->
         Column(
             modifier = Modifier
+                .imePadding()
                 .fillMaxSize()
                 .padding(innerPadding)
-                .verticalScroll(rememberScrollState())
+                .verticalScroll(rememberScrollState()),
         ) {
             HomeMovieBigLazyRow(
                 cardHeader = "Now Playing 🍿",
@@ -65,6 +78,24 @@ fun HomeScreen(
             HomeMovieSmallLazyRow(
                 cardHeader = "Most Popular ✨",
                 items = mostPopular.value.results,
+                navController = navController
+            )
+
+            HomeMovieSmallLazyRow(
+                cardHeader = "Upcoming ⬆️",
+                items = upcoming.value.results,
+                navController = navController
+            )
+
+            HomeMovieSmallLazyRow(
+                cardHeader = "Upcoming ⬆️",
+                items = upcoming.value.results,
+                navController = navController
+            )
+
+            HomeMovieSmallLazyRow(
+                cardHeader = "Upcoming ⬆️",
+                items = upcoming.value.results,
                 navController = navController
             )
 

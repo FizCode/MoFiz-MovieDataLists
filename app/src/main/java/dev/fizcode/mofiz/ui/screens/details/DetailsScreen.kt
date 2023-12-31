@@ -24,14 +24,17 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
@@ -42,7 +45,6 @@ import coil.compose.AsyncImage
 import dev.fizcode.mofiz.R
 import dev.fizcode.mofiz.common.Constant.Named.IMAGE_URL
 import dev.fizcode.mofiz.ui.components.PosterPath
-import dev.fizcode.mofiz.ui.components.StatusAndNavBarColorBackground
 import dev.fizcode.mofiz.ui.components.TagTextOnly
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -51,21 +53,24 @@ fun DetailsScreen(
     navController: NavController,
     argsId: Int
 ) {
-
     val detailsViewModel: DetailsViewModel = hiltViewModel()
 
     // Bind vieModel
     detailsViewModel.onViewLoaded(movieId = argsId)
     val movieDetails = detailsViewModel.shouldShowDetails.collectAsState()
 
-    // View
-    StatusAndNavBarColorBackground()
+
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = "Movie Details") },
+                title = { /* No Title */},
+                colors = topAppBarColors(containerColor = Color.Transparent),
                 navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
+                    IconButton(
+                        colors = IconButtonDefaults
+                            .iconButtonColors(MaterialTheme.colorScheme.background),
+                        onClick = { navController.popBackStack() }
+                    ) {
                         Icon(
                             imageVector = Icons.Rounded.ArrowBack,
                             contentDescription = "Back Button"
@@ -74,11 +79,10 @@ fun DetailsScreen(
                 },
             )
         }
-    ) {
-        innerPadding ->
+    ) { innerPadding ->
         Column(
             Modifier
-                .padding(innerPadding)
+                .padding(bottom = innerPadding.calculateBottomPadding())
         ) {
             Box(
                 modifier = Modifier.fillMaxWidth(),
@@ -89,7 +93,7 @@ fun DetailsScreen(
                     placeholder = painterResource(R.drawable.loading_image_small100x144),
                     contentDescription = "Movie Poster",
                     modifier = Modifier
-                        .aspectRatio(16f / 9f),
+                        .aspectRatio(16f / 10f),
                     contentScale = ContentScale.Crop
                 )
                 Column(modifier = Modifier
@@ -104,7 +108,7 @@ fun DetailsScreen(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp),
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
                     verticalAlignment = Alignment.Bottom,
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
@@ -136,7 +140,7 @@ fun DetailsScreen(
                         ) {
                             Row (
                                 Modifier
-                                .padding(vertical = 8.dp, horizontal = 16.dp),
+                                    .padding(vertical = 8.dp, horizontal = 16.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Icon(
@@ -215,7 +219,7 @@ fun DetailsScreen(
                 LazyRow(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(4.dp),
-                    contentPadding = PaddingValues(horizontal = 16.dp)
+                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
                 ) {
                     itemsIndexed(
                         items = movieDetails.value.genres
@@ -227,7 +231,7 @@ fun DetailsScreen(
 
             // Overviews
             Column(
-                modifier = Modifier.padding(16.dp),
+                modifier = Modifier.padding(horizontal = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Text(

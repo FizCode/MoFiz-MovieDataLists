@@ -83,7 +83,7 @@ fun MovieListCardsBig(
 ) {
     Column(
         modifier = Modifier
-            .size(width = 212.dp, height = 176.dp)
+            .size(width = 212.dp, height = 180.dp)
             .clickable { onClick() }
             .background(
                 color = MaterialTheme.colorScheme.surfaceVariant,
