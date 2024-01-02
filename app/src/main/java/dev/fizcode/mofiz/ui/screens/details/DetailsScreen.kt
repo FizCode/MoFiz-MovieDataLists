@@ -16,18 +16,31 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.ArrowBack
+import androidx.compose.material.icons.rounded.Bookmark
 import androidx.compose.material.icons.rounded.BookmarkBorder
 import androidx.compose.material.icons.rounded.StarRate
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
@@ -37,26 +50,48 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import dev.fizcode.mofiz.R
 import dev.fizcode.mofiz.common.Constant.Named.IMAGE_URL
-import dev.fizcode.mofiz.ui.components.ImageCard
+import dev.fizcode.mofiz.ui.components.PosterPath
 import dev.fizcode.mofiz.ui.components.TagTextOnly
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DetailsScreen(
     navController: NavController,
     argsId: Int
 ) {
 
-    val detailsViewModel: DetailsViewModel = hiltViewModel()
+    // Remember State
+    var isBookmarked by remember { mutableStateOf(false) }
 
     // Bind vieModel
-    detailsViewModel.onViewLoaded(movieId = argsId)
+    val detailsViewModel: DetailsViewModel = hiltViewModel()
     val movieDetails = detailsViewModel.shouldShowDetails.collectAsState()
+    detailsViewModel.onViewLoaded(movieId = argsId)
+    isBookmarked = detailsViewModel.isBookmarked.value
 
-    Scaffold() {
-        innerPadding ->
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { /* No Title */ },
+                colors = topAppBarColors(containerColor = Color.Transparent),
+                navigationIcon = {
+                    IconButton(
+                        colors = IconButtonDefaults
+                            .iconButtonColors(MaterialTheme.colorScheme.background),
+                        onClick = { navController.popBackStack() }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Rounded.ArrowBack,
+                            contentDescription = "Back Button"
+                        )
+                    }
+                },
+            )
+        }
+    ) { innerPadding ->
         Column(
             Modifier
-                .padding(innerPadding)
+                .padding(bottom = innerPadding.calculateBottomPadding())
         ) {
             Box(
                 modifier = Modifier.fillMaxWidth(),
@@ -64,10 +99,10 @@ fun DetailsScreen(
             ) {
                 AsyncImage(
                     model = IMAGE_URL + movieDetails.value.backdropPath,
-                    placeholder = painterResource(R.drawable.loading_image100x144),
+                    placeholder = painterResource(R.drawable.loading_image_small100x144),
                     contentDescription = "Movie Poster",
                     modifier = Modifier
-                        .aspectRatio(16f / 9f),
+                        .aspectRatio(16f / 10f),
                     contentScale = ContentScale.Crop
                 )
                 Column(modifier = Modifier
@@ -82,7 +117,7 @@ fun DetailsScreen(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp),
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
                     verticalAlignment = Alignment.Bottom,
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
@@ -94,7 +129,7 @@ fun DetailsScreen(
                                 .height(140.dp)
                                 .fillMaxWidth()
                         ) {
-                            ImageCard(moviePoster = IMAGE_URL + movieDetails.value.posterPath)
+                            PosterPath(moviePoster = IMAGE_URL + movieDetails.value.posterPath)
                         }
                     }
                     Row(
@@ -104,49 +139,66 @@ fun DetailsScreen(
                     ) {
                         val apiRating = movieDetails.value.voteAverage?.toInt()
 
+                        // Ratings
                         Column(
                             modifier = Modifier
                                 .background(
-                                    color = MaterialTheme.colorScheme.primary,
+                                    color = MaterialTheme.colorScheme.tertiary,
                                     shape = RoundedCornerShape(32.dp)
                                 ),
                         ) {
                             Row (
                                 Modifier
-                                .padding(vertical = 8.dp, horizontal = 16.dp),
+                                    .padding(vertical = 8.dp, horizontal = 16.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-
                                 Icon(
                                     imageVector = Icons.Rounded.StarRate,
                                     contentDescription = "Start Rating",
-                                    tint = MaterialTheme.colorScheme.onPrimary
+                                    tint = MaterialTheme.colorScheme.onTertiary
                                 )
                                 Spacer(modifier = Modifier.size(4.dp))
                                 Text(
                                     text = "$apiRating",
                                     style = MaterialTheme.typography.labelLarge,
-                                    color = MaterialTheme.colorScheme.onPrimary
+                                    color = MaterialTheme.colorScheme.onTertiary
                                 )
                             }
                         }
                         Spacer(modifier = Modifier.size(8.dp))
-                        Button(
-                            onClick = { /* TODO */ },
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Icon(
-                                imageVector = Icons.Rounded.BookmarkBorder,
-                                contentDescription = "Bookmark"
-                            )
-                            Spacer(modifier = Modifier.size(8.dp))
-                            Text(text = "Bookmark")
+
+                        // Bookmark Button
+                        if (!isBookmarked) {
+                            Button(
+                                onClick = { detailsViewModel.bookmarking() },
+                                modifier = Modifier.fillMaxWidth(),
+                                colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Rounded.BookmarkBorder,
+                                    contentDescription = "Bookmark"
+                                )
+                                Spacer(modifier = Modifier.size(8.dp))
+                                Text( text = "Bookmark")
+                            }
+                        } else {
+                            Button(
+                                onClick = { detailsViewModel.deleteBookmark() },
+                                modifier = Modifier.fillMaxWidth(),
+                                colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.secondary)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Rounded.Bookmark,
+                                    contentDescription = "Remove"
+                                )
+                                Spacer(modifier = Modifier.size(8.dp))
+                                Text(text = "Bookmark")
+                            }
                         }
                     }
                 }
             }
 
-            // Movie Type, Title, Genre
             Column(modifier = Modifier.padding(vertical = 16.dp)) {
                 Row(
                     modifier = Modifier
@@ -154,6 +206,8 @@ fun DetailsScreen(
                         .padding(horizontal = 16.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+
+                    // Movie Type or Country
                     LazyRow(
                         horizontalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
@@ -174,12 +228,16 @@ fun DetailsScreen(
                             }
                         }
                     }
+
+                    // Movie Duration
                     Text(
                         text = "• ${movieDetails.value.runtime}m",
                         modifier = Modifier.padding(horizontal = 8.dp),
                         style = MaterialTheme.typography.titleMedium
                     )
                 }
+
+                // Movie Title
                 Text(
                     text = "${ movieDetails.value.originalTitle }",
                     modifier = Modifier
@@ -187,10 +245,12 @@ fun DetailsScreen(
                         .padding(horizontal = 16.dp),
                     style = MaterialTheme.typography.headlineSmall
                 )
+
+                // Movie Genre
                 LazyRow(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(4.dp),
-                    contentPadding = PaddingValues(horizontal = 16.dp)
+                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
                 ) {
                     itemsIndexed(
                         items = movieDetails.value.genres
@@ -202,7 +262,7 @@ fun DetailsScreen(
 
             // Overviews
             Column(
-                modifier = Modifier.padding(16.dp),
+                modifier = Modifier.padding(horizontal = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Text(
