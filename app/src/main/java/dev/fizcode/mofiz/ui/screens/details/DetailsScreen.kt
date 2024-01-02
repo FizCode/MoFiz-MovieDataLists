@@ -17,9 +17,11 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBack
+import androidx.compose.material.icons.rounded.Bookmark
 import androidx.compose.material.icons.rounded.BookmarkBorder
 import androidx.compose.material.icons.rounded.StarRate
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -32,6 +34,10 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -53,17 +59,20 @@ fun DetailsScreen(
     navController: NavController,
     argsId: Int
 ) {
-    val detailsViewModel: DetailsViewModel = hiltViewModel()
+
+    // Remember State
+    var isBookmarked by remember { mutableStateOf(false) }
 
     // Bind vieModel
-    detailsViewModel.onViewLoaded(movieId = argsId)
+    val detailsViewModel: DetailsViewModel = hiltViewModel()
     val movieDetails = detailsViewModel.shouldShowDetails.collectAsState()
-
+    detailsViewModel.onViewLoaded(movieId = argsId)
+    isBookmarked = detailsViewModel.isBookmarked.value
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { /* No Title */},
+                title = { /* No Title */ },
                 colors = topAppBarColors(containerColor = Color.Transparent),
                 navigationIcon = {
                     IconButton(
@@ -159,23 +168,37 @@ fun DetailsScreen(
                         Spacer(modifier = Modifier.size(8.dp))
 
                         // Bookmark Button
-                        Button(
-                            onClick = { /* TODO */ },
-                            modifier = Modifier.fillMaxWidth(),
-                            enabled = false
-                        ) {
-                            Icon(
-                                imageVector = Icons.Rounded.BookmarkBorder,
-                                contentDescription = "Bookmark"
-                            )
-                            Spacer(modifier = Modifier.size(8.dp))
-                            Text(text = "Bookmark")
+                        if (!isBookmarked) {
+                            Button(
+                                onClick = { detailsViewModel.bookmarking() },
+                                modifier = Modifier.fillMaxWidth(),
+                                colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Rounded.BookmarkBorder,
+                                    contentDescription = "Bookmark"
+                                )
+                                Spacer(modifier = Modifier.size(8.dp))
+                                Text( text = "Bookmark")
+                            }
+                        } else {
+                            Button(
+                                onClick = { detailsViewModel.deleteBookmark() },
+                                modifier = Modifier.fillMaxWidth(),
+                                colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.secondary)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Rounded.Bookmark,
+                                    contentDescription = "Remove"
+                                )
+                                Spacer(modifier = Modifier.size(8.dp))
+                                Text(text = "Bookmark")
+                            }
                         }
                     }
                 }
             }
 
-            // Movie Type, Title, Genre
             Column(modifier = Modifier.padding(vertical = 16.dp)) {
                 Row(
                     modifier = Modifier
@@ -183,6 +206,8 @@ fun DetailsScreen(
                         .padding(horizontal = 16.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+
+                    // Movie Type or Country
                     LazyRow(
                         horizontalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
@@ -203,12 +228,16 @@ fun DetailsScreen(
                             }
                         }
                     }
+
+                    // Movie Duration
                     Text(
                         text = "• ${movieDetails.value.runtime}m",
                         modifier = Modifier.padding(horizontal = 8.dp),
                         style = MaterialTheme.typography.titleMedium
                     )
                 }
+
+                // Movie Title
                 Text(
                     text = "${ movieDetails.value.originalTitle }",
                     modifier = Modifier
@@ -216,6 +245,8 @@ fun DetailsScreen(
                         .padding(horizontal = 16.dp),
                     style = MaterialTheme.typography.headlineSmall
                 )
+
+                // Movie Genre
                 LazyRow(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(4.dp),

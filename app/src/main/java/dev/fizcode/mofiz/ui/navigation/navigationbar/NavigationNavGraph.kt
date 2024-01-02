@@ -16,10 +16,10 @@ fun BottomNavGraph(navController: NavController, bottomNavController: NavHostCon
         startDestination = NavigationBarScreen.Home.route
     ) {
         composable(route = NavigationBarScreen.Home.route) {
-            HomeScreen(navController = navController, paddingValues = paddingValues)
+            HomeScreen(navController = navController)
         }
         composable(route = NavigationBarScreen.Bookmark.route) {
-            BookmarkScreen()
+            BookmarkScreen(navController = navController)
         }
     }
 }

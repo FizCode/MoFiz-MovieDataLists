@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -24,13 +23,11 @@ import androidx.navigation.NavController
 import dev.fizcode.mofiz.ui.components.CustomSearchInput
 import dev.fizcode.mofiz.ui.components.HomeMovieBigLazyRow
 import dev.fizcode.mofiz.ui.components.HomeMovieSmallLazyRow
-import dev.fizcode.mofiz.ui.components.StatusColorBackgroundAndNavBarColorSurfaceContainer
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    navController: NavController,
-    paddingValues: PaddingValues
+    navController: NavController
 ) {
 
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
@@ -42,9 +39,7 @@ fun HomeScreen(
     val mostPopular = homeViewModel.shouldShowMostPopular.collectAsState()
     val upcoming = homeViewModel.shouldShowUpcoming.collectAsState()
 
-
     // View
-    StatusColorBackgroundAndNavBarColorSurfaceContainer()
     Scaffold(
         topBar = {
             TopAppBar(
@@ -64,7 +59,6 @@ fun HomeScreen(
     ) { innerPadding ->
         Column(
             modifier = Modifier
-                .imePadding()
                 .fillMaxSize()
                 .padding(innerPadding)
                 .verticalScroll(rememberScrollState()),
